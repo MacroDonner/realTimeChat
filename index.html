@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Real-Time Chat</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #121212;
+      color: #e0e0e0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    header {
+      padding: 1rem;
+      background-color: #1f1f1f;
+      text-align: center;
+      font-size: 1.5rem;
+      border-bottom: 1px solid #333;
+    }
+
+    #messages {
+      flex: 1;
+      padding: 1rem;
+      overflow-y: auto;
+    }
+
+    .message {
+      margin-bottom: 0.5rem;
+      padding: 0.5rem;
+      background-color: #2a2a2a;
+      border-radius: 4px;
+      max-width: 70%;
+    }
+
+    form {
+      display: flex;
+      padding: 1rem;
+      border-top: 1px solid #333;
+      background-color: #1f1f1f;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 4px;
+      margin-right: 0.5rem;
+      background-color: #2e2e2e;
+      color: white;
+      font-size: 1rem;
+    }
+
+    button {
+      padding: 0.75rem 1rem;
+      border: none;
+      border-radius: 4px;
+      background-color: #4f46e5;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #4338ca;
+    }
+  </style>
+</head>
+<body>
+  <header>💬 Real-Time Chat</header>
+
+  <div id="messages"></div>
+
+  <form id="chat-form" autocomplete="off">
+    <input id="message-input" type="text" placeholder="Type a message..." />
+    <button type="submit">Send</button>
+  </form>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    const messages = document.getElementById('messages');
+    const form = document.getElementById('chat-form');
+    const input = document.getElementById('message-input');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const msg = input.value.trim();
+      if (msg) {
+        socket.emit('chat message', msg);
+        input.value = '';
+      }
+    });
+
+    socket.on('chat message', (msg) => {
+      const msgElem = document.createElement('div');
+      msgElem.className = 'message';
+      msgElem.textContent = msg;
+      messages.appendChild(msgElem);
+      messages.scrollTop = messages.scrollHeight;
+    });
+  </script>
+</body>
+</html>
+
